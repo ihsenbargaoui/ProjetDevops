@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-nest-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-nest-app
+  template:
+    metadata:
+      labels:
+        app: my-nest-app
+    spec:
+      containers:
+      - name: my-nest-app-container
+        # If you push to Docker Hub:
+        # image: <your_dockerhub_username>/my-nest-app:<tag>
+        # If local build inside minikube's docker:
+        image: my-nest-app:latest
+        ports:
+        - containerPort: 3000

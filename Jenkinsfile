@@ -52,7 +52,7 @@ pipeline {
             }
         }
 
-         stage('Build Docker Image in Minikube') {
+        stage('Build Docker Image in Minikube') {
             steps {
                 script {
                     // Switch our shell to use Minikube's Docker daemon
@@ -87,6 +87,7 @@ pipeline {
                     sh "kubectl get pods -o wide"
                     sh "kubectl get svc"
                 }
-            }
+            }    
+        }
     }
 }

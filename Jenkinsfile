@@ -4,7 +4,7 @@ pipeline {
         nodejs '20.16.0'
     }
     environment {
-        DOCKER_IMAGE = "project-devops:latest"
+        DOCKER_IMAGE = "projet-devops:latest"
         // For pushing to Docker Hub, you might do:
         // DOCKER_HUB_REPO = "<your_dockerhub_username>/my-nest-app"
     }

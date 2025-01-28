@@ -5,8 +5,6 @@ pipeline {
     }
     environment {
         DOCKER_IMAGE = "projet-devops:latest"
-        // For pushing to Docker Hub, you might do:
-        // DOCKER_HUB_REPO = "<your_dockerhub_username>/my-nest-app"
     }
     
     stages {
@@ -31,15 +29,6 @@ pipeline {
             }
         }
         
-        // stage('Check Node.js Version in Docker') {
-        //     steps {
-        //         script {
-        //             // Check the version of Node.js inside the Docker container (which uses node:16-alpine)
-        //             sh "docker run --rm ${DOCKER_IMAGE} node -v"
-        //         }
-        //     }
-        // }
-
         stage('Build') {
             steps {
                 // Build the project using npm
@@ -63,25 +52,41 @@ pipeline {
             }
         }
 
-        // Uncomment and configure the following sections if pushing to Docker Hub and deploying to Minikube is needed.
-        // stage('Push Docker Image') {
-        //     steps {
-        //         script {
-        //             // Example to push Docker image to Docker Hub
-        //             echo "Skipping push for local demonstration."
-        //         }
-        //     }
-        // }
+         stage('Build Docker Image in Minikube') {
+            steps {
+                script {
+                    // Switch our shell to use Minikube's Docker daemon
+                    sh "eval \$(minikube docker-env)"
 
-        // stage('Deploy to Minikube') {
-        //     steps {
-        //         script {
-        //             // Example for deploying to Minikube
-        //             echo "Deploying to Minikube..."
-        //             sh "kubectl apply -f k8s/deployment.yaml"
-        //             sh "kubectl apply -f k8s/service.yaml"
-        //         }
-        //     }
-        // }
+                    // Build the Docker image inside Minikube's Docker
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+
+                    // Optional: Verify the image is present in Minikube's Docker
+                    sh "docker images | grep 'projet-devops'"
+                }
+            }
+        }
+
+        stage('Deploy to Minikube') {
+            steps {
+                script {
+                    echo "Deploying to Minikube using k8s manifests..."
+                    sh "kubectl apply -f Kubernetes/deployment.yaml"
+                    sh "kubectl apply -f Kubernetes/service.yaml"
+                }
+            }
+        }
+
+        stage('Check K8s Deployment') {
+            steps {
+                script {
+                    echo "Checking rollout status..."
+                    // Wait up to 60 seconds for the new Pods to become Ready
+                    sh "kubectl rollout status deployment/my-nest-app-deployment --timeout=60s"
+                    // Print Pods and Service info for debug
+                    sh "kubectl get pods -o wide"
+                    sh "kubectl get svc"
+                }
+            }
     }
 }

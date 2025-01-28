@@ -66,6 +66,25 @@ pipeline {
                 }
             }
         }
+        stage('Build Docker Image in Minikube') {
+            steps {
+                script {
+                    sh '''
+                        minikube start --driver=docker
+
+              # Switch to Minikube’s Docker environment
+                        eval "$(minikube docker-env)"
+
+              # Build the Docker image inside Minikube
+                        docker build -t projet-devops:latest .
+
+              # Verify the image is present in Minikube’s Docker
+                        docker images | grep "projet-devops"
+                    '''
+                }
+            }
+        }
+
 
         stage('Deploy to Minikube') {
             steps {

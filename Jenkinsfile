@@ -31,14 +31,14 @@ pipeline {
             }
         }
         
-        stage('Check Node.js Version in Docker') {
-            steps {
-                script {
-                    // Check the version of Node.js inside the Docker container (which uses node:16-alpine)
-                    sh "docker run --rm ${DOCKER_IMAGE} node -v"
-                }
-            }
-        }
+        // stage('Check Node.js Version in Docker') {
+        //     steps {
+        //         script {
+        //             // Check the version of Node.js inside the Docker container (which uses node:16-alpine)
+        //             sh "docker run --rm ${DOCKER_IMAGE} node -v"
+        //         }
+        //     }
+        // }
 
         stage('Build') {
             steps {
